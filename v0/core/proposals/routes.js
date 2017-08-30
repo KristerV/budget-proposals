@@ -10,6 +10,7 @@ module.exports = function(app) {
 		let proposalsList = Object.values(withStatuses)
 		if (req.query.status)
 			proposalsList = proposalsList.filter(proposal => req.query.status === proposal.status)
+
 		res.json(proposalsList)
 	})
 

@@ -1,28 +1,19 @@
-const child_process = require('child_process')
+const { execFile } = require('child-process-promise')
 const conf = require('../config')
+const { InternalServerError } = require('../errors')
 
 module.exports.runCliCmd = async function(options) {
 	let data
-	
+
 	if (typeof options === 'string')
 		options = [options]
 
 	try {
-		data = await new Promise((resolve, reject) => {
-			child_process.execFile(conf["cli-command"], options, (err, result) => {
-				if (err)
-					reject(err)
-				else
-					resolve(result)
-			})
-		})
-		data.status = 200;
+		const { stdout } = await execFile(conf["cli-command"], options)
+		data = stdout
+		data.status = 200
 	} catch(e) {
-		data = {
-			status: 500,
-			command: e.cmd,
-			message: e.toString().replace(/\n/g, '; ')
-		};
+		throw new InternalServerError(e.toString().replace(/\n/g, '; '))
 	}
 
 	// Try return an object

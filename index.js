@@ -1,7 +1,9 @@
 const express = require('express')
+const createRouter = require('express-promise-router')
 const app = express()
 const requireAll = require('require-all')
 const utilsV0 = require('./v0/utils')
+const middlewareV0 = require('./v0/middleware')
 
 app.use(function(req, res, next) {
 
@@ -28,7 +30,7 @@ const allRoutes = requireAll({
 // Import all routes
 let allRoutesStrings = []
 function importObject(obj, currentRoute) {
-	const router = express.Router()
+	const router = createRouter()
 	app.use(currentRoute, router)
 	for (const key in obj) {
 		if (!obj.hasOwnProperty(key))
@@ -54,6 +56,8 @@ app.get('/', async (req, res) => {
 	const data = {"All available endpoints": routesUrls.sort()}
 	res.json(data)
 })
+
+app.use(middlewareV0.errors())
 
 app.listen(3000, () => {
 	console.log('Listening on port 3000!')
