@@ -1,5 +1,5 @@
-const createHttpError = require('./createHttpError')
+const createHttpError = require("./createHttpError");
 
 module.exports = {
-  InternalServerError: createHttpError('InternalServerError', 500)
-}
+  InternalServerError: createHttpError("InternalServerError", 500)
+};
