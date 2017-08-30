@@ -1,3 +1,3 @@
 module.exports = {
-	"cli-command": "dash-cli"
-}
+  "cli-command": "dash-cli"
+};

@@ -4,10 +4,11 @@ A Budget Proposal system for Helium Payments with the Masternode functions that 
 
 ## How to run
 
-1. Clone both the back and frontend.
-1. Install dashd and dash-cli to your (linux) system.
-1. Copy `config.example.js` to `config.js` and change contents (in root directories).
-1. Run `dashd` and start the back and frontend with `npm run dev` separately.
+1. Make sure Docker is installed: https://www.docker.com/
+2. Clone the repo: `git clone git@github.com:KristerV/heliumpay-budgetweb-backend.git`
+3. Install dependencies: `npm install`
+4. Build the docker images: `docker-compose build` (re-run whenever Dockerfile or package.json changes)
+5. Start the containers: `docker-compose up`
 
 ## Development stages
 

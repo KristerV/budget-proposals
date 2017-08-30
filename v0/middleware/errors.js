@@ -6,6 +6,6 @@ module.exports = function createErrorsMiddleware() {
       code: err.code,
       message: err.message,
       stack: err.stack
-    })
-  }
-}
+    });
+  };
+};

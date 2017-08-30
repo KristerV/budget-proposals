@@ -4,7 +4,9 @@
   "description": "Helium Budget Proposals website",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon -L index.js"
+    "dev": "nodemon -L index.js",
+    "lint": "eslint .",
+    "precommit": "lint-staged"
   },
   "repository": {
     "type": "git",
@@ -23,5 +25,19 @@
     "moment": "^2.18.1",
     "nodemon": "^1.11.0",
     "require-all": "^2.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.5.0",
+    "eslint-config-prettier": "^2.3.0",
+    "eslint-plugin-prettier": "^2.2.0",
+    "husky": "^0.14.3",
+    "lint-staged": "^4.0.4",
+    "prettier": "^1.6.1"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }
