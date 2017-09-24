@@ -1,0 +1,13 @@
+# Dockerfile
+# 	- start node
+#	- start heliumd (blockchain is in sysfiles)
+
+
+# Node.js server
+FROM node:8
+COPY package.json .
+RUN npm install
+WORKDIR /opt/app
+COPY . .
+EXPOSE 3000
+CMD npm run production

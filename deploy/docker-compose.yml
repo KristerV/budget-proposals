@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  api:
+    build: ./app
+    ports:
+      - "3000:3000"
+    # pull container env vars from .env file
+    # we need to override DB_HOST because docker-compose enables communication between containers
+    # by bridging the network using the service name
+    env_file: ../env
+    environment:
+      - DB_HOST=db # override for docker-compose internal network
+      - MAILGUN_API_KEY # secret, set manually with $ export MAILGUN_API_KEY=[api-key]
+      - MAILGUN_DOMAIN # secret, set manually with $ export MAILGUN_DOMAIN=[domain]
+
+  wallet:
+    build: ./wallet
+
+  db:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: heliumlabs
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  db-test:
+    image: postgres
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_DB: heliumlabs-test
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
