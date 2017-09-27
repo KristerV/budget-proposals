@@ -4,6 +4,7 @@
   "description": "Helium Budget Proposals website",
   "main": "index.js",
   "scripts": {
+    "production": "node index.js",
     "dev": "nodemon -L index.js",
     "lint": "eslint .",
     "precommit": "lint-staged",

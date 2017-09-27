@@ -1,21 +1,37 @@
 version: "3"
 
 services:
-  api:
-    build: ./app
+  app:
+    build:
+      context: ../
+      dockerfile: ./deploy/Dockerfile-app
+    volumes:
+      - coinbin:/coinbin
+    depends_on:
+      - daemon
+    command: bash -c "cp /coinbin/helium* /usr/local/bin/ && node index.js"
+    networks:
+      coinbinnw:
     ports:
       - "3000:3000"
-    # pull container env vars from .env file
-    # we need to override DB_HOST because docker-compose enables communication between containers
-    # by bridging the network using the service name
-    env_file: ../env
+    env_file: ../.env
     environment:
       - DB_HOST=db # override for docker-compose internal network
       - MAILGUN_API_KEY # secret, set manually with $ export MAILGUN_API_KEY=[api-key]
       - MAILGUN_DOMAIN # secret, set manually with $ export MAILGUN_DOMAIN=[domain]
 
-  wallet:
-    build: ./wallet
+  daemon:
+    build:
+      context: .
+      dockerfile: ./Dockerfile-daemon
+    volumes:
+      - coinbin:/coinbin
+    ports:
+      - 8332:8332
+    command: bash -c "cp /usr/local/bin/helium* /coinbin && /usr/local/bin/heliumd -server -rpcallowip=172.25.0.0/24"
+    networks:
+      coinbinnw:
+        ipv4_address: 172.25.0.101
 
   db:
     image: postgres
@@ -26,11 +42,12 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
 
-  db-test:
-    image: postgres
-    ports:
-      - 5433:5432
-    environment:
-      POSTGRES_DB: heliumlabs-test
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: test
+volumes:
+  coinbin:
+
+networks:
+  coinbinnw:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 172.25.0.0/24
