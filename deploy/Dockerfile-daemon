@@ -22,6 +22,8 @@ RUN ./configure
 RUN make
 RUN make install
 
+COPY helium-server.conf /root/.heliumcore/helium.conf
+
 # cleanup
 WORKDIR /root
 RUN rm -rf /root/dash-helium

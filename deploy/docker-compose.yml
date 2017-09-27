@@ -10,8 +10,6 @@ services:
     depends_on:
       - daemon
     command: bash -c "cp /coinbin/helium* /usr/local/bin/ && node index.js"
-    networks:
-      coinbinnw:
     ports:
       - "3000:3000"
     env_file: ../.env
@@ -28,10 +26,7 @@ services:
       - coinbin:/coinbin
     ports:
       - 8332:8332
-    command: bash -c "cp /usr/local/bin/helium* /coinbin && /usr/local/bin/heliumd -server -rpcallowip=172.25.0.0/24"
-    networks:
-      coinbinnw:
-        ipv4_address: 172.25.0.101
+    command: bash -c "cp /usr/local/bin/helium* /coinbin && /usr/local/bin/heliumd"
 
   db:
     image: postgres
@@ -44,10 +39,3 @@ services:
 
 volumes:
   coinbin:
-
-networks:
-  coinbinnw:
-    driver: bridge
-    ipam:
-      config:
-      - subnet: 172.25.0.0/24

@@ -9,7 +9,7 @@ RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
 RUN apt install -y nodejs
 
 # Helium-cli conf
-COPY deploy/helium.conf /root/.heliumcore/
+COPY deploy/helium-client.conf /root/.heliumcore/helium.conf
 
 # Node app
 WORKDIR /opt/app
