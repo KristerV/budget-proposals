@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
 		{ subject: encodeId(user.id), expiresIn: '5m' }
 	)
 
-	await mailer.sendPasswordReset(user.email, token)
+	await mailer.sendPasswordReset(user.email, encodeId(user.id), token)
 
 	res.json(true)
 }

@@ -2,22 +2,26 @@
 // return type of getClient need to be mocked in setupTests.js
 const getClient = require('./getClient')
 
-module.exports.sendEmailConfirmation = async (to, token) => {
+module.exports.sendEmailConfirmation = async (to, userId, token) => {
 	const client = getClient()
+	const url = `${process.env.FRONTEND_URL}/confirmEmail?userId=${userId}&token=${token}`
 	return client.send({
 		to,
 		from: process.env.SUPPORT_EMAIL,
 		subject: 'Email Confirmation',
-		text: `${process.env.FRONTEND_URL}/confirmEmail?token=${token}`
+		text: `Confirm your email: ${url}`,
+		html: `<a href=${url}>Confirm your email</a>`
 	})
 }
 
-module.exports.sendPasswordReset = async (to, token) => {
+module.exports.sendPasswordReset = async (to, userId, token) => {
 	const client = getClient()
+	const url = `${process.env.FRONTEND_URL}/changePassword?userId=${userId}&token=${token}`
 	return client.send({
 		to,
 		from: process.env.SUPPORT_EMAIL,
 		subject: 'Reset Password',
-		text: `${process.env.FRONTEND_URL}/changePassword?token=${token}`
+		text: `Reset your password: ${url}`,
+		html: `<a href=${url}>Reset your password</a>`
 	})
 }

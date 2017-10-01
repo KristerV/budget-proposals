@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
 			{ subject: encodeId(user.id), expiresIn: '5m' }
 		)
 
-		await mailer.sendEmailConfirmation(user.email, token)
+		await mailer.sendEmailConfirmation(user.email, encodeId(user.id), token)
 	}
 
 	res.json(User.toJSON(user))
