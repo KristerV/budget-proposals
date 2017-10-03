@@ -1,6 +1,29 @@
 version: "3"
 
 services:
+  nginx:
+    build:
+      context: .
+      dockerfile: ./Dockerfile-nginx
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - nginx-certs:/etc/nginx/certs:ro
+      - certbot-www:/var/www/letsencrypt
+    restart: always
+
+  certbot:
+    image: pierreprinetti/certbot:latest
+    volumes:
+      - nginx-certs:/etc/letsencrypt
+      - certbot-www:/var/www/letsencrypt
+    environment:
+      - domains=heliumlabs.org,api.heliumlabs.org
+      - email=krister.viirsaar@gmail.com
+    depends_on:
+      - nginx
+
   app:
     build:
       context: ../
@@ -10,8 +33,7 @@ services:
     depends_on:
       - daemon
     command: bash -c "cp /coinbin/helium* /usr/local/bin/ && node index.js"
-    ports:
-      - "3000:3000"
+    restart: always
     env_file: ../.env
     environment:
       - DB_HOST=db # override for docker-compose internal network
@@ -27,6 +49,7 @@ services:
     ports:
       - 8332:8332
     command: bash -c "cp /usr/local/bin/helium* /coinbin && /usr/local/bin/heliumd"
+    restart: always
 
   db:
     image: postgres
@@ -39,3 +62,5 @@ services:
 
 volumes:
   coinbin:
+  nginx-certs:
+  certbot-www:
