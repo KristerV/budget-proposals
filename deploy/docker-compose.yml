@@ -8,21 +8,14 @@ services:
     ports:
       - 80:80
       - 443:443
-    volumes:
-      - nginx-certs:/etc/nginx/certs:ro
-      - certbot-www:/var/www/letsencrypt
     restart: always
-
-  certbot:
-    image: pierreprinetti/certbot:latest
-    volumes:
-      - nginx-certs:/etc/letsencrypt
-      - certbot-www:/var/www/letsencrypt
+    depends_on:
+      - app
     environment:
       - domains=heliumlabs.org,api.heliumlabs.org
       - email=krister.viirsaar@gmail.com
-    depends_on:
-      - nginx
+    volumes:
+      - letsencrypt:/etc/letsencrypt
 
   app:
     build:
@@ -62,5 +55,4 @@ services:
 
 volumes:
   coinbin:
-  nginx-certs:
-  certbot-www:
+  letsencrypt:
