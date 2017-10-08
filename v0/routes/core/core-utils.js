@@ -2,13 +2,15 @@ const { execFile } = require('child-process-promise')
 const conf = require('../../config')
 const { InternalServerError } = require('../../errors')
 
-module.exports.runCliCmd = async function(options) {
+const maxBuffer = 1024 * 500 // 512kb
+
+module.exports.runCliCmd = async function(args) {
 	let data
 
-	if (typeof options === 'string') options = [options]
+	if (typeof args === 'string') args = [args]
 
 	try {
-		const { stdout } = await execFile(conf['cli-command'], options)
+		const { stdout } = await execFile(conf['cli-command'], args, { maxBuffer })
 		data = stdout
 		data.status = 200
 	} catch (e) {
