@@ -8,6 +8,7 @@ services:
     volumes:
       - .:/opt/app
       - /opt/app/node_modules/
+      - blockchain-data:/root/.dashcore/
     # pull container env vars from .env file
     # we need to override DB_HOST because docker-compose enables communication between containers
     # by bridging the network using the service name
@@ -34,3 +35,6 @@ services:
       POSTGRES_DB: heliumlabs-test
       POSTGRES_USER: test
       POSTGRES_PASSWORD: test
+
+volumes:
+  blockchain-data:
