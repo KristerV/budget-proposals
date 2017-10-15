@@ -3,12 +3,11 @@ const getDbDriver = require('../getDbDriver')
 module.exports.up = async () => {
 	const db = await getDbDriver()
 	return db.schema.createTable('comment_vote', t => {
-		t.increments('id')
-		t.timestamp('createdAt')
-		t.timestamp('updatedAt')
-		t.integer('direction')
+		t.timestamp('createdAt').notNullable()
+		t.timestamp('updatedAt').notNullable()
+		t.integer('direction').notNullable()
 		t
-			.integer('userId')
+			.integer('createdBy')
 			.references('id')
 			.inTable('user')
 			.index()
@@ -17,6 +16,8 @@ module.exports.up = async () => {
 			.references('id')
 			.inTable('comment')
 			.index()
+
+		t.primary(['commentId', 'createdBy'])
 	})
 }
 

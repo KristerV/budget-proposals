@@ -1,6 +1,6 @@
 const { User } = require('../../../database/models')
 const mailer = require('../../../mailer')
-const { UnauthorizedError, BadRequestError, NotFoundError } = require('../../errors')
+const { UnauthorizedError, NotFoundError } = require('../../errors')
 const { signJwt, encodeId } = require('../../utils')
 const scopes = require('../../scopes')
 const { validateUpdateAttributes } = require('./validateAttributes')

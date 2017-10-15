@@ -14,7 +14,7 @@ const privateFields = ['password']
 /**
  * @typedef User
  * @type {object}
- * @property {string} id - the user's id
+ * @property {number} id - the user's id
  * @property {string} username - the user's username
  * @property {string} password - the user's password (will be automatically hashed)
  * @property {string} email - the user's email

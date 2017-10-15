@@ -4,11 +4,19 @@ module.exports.up = async () => {
 	const db = await getDbDriver()
 	return db.schema.createTable('comment', t => {
 		t.increments('id')
-		t.timestamp('createdAt')
-		t.timestamp('updatedAt')
-		t.text('text')
 		t
-			.integer('userId')
+			.timestamp('createdAt')
+			.notNullable()
+			.index()
+		t.timestamp('updatedAt').notNullable()
+		t.timestamp('deletedAt').index()
+		t.text('text').notNullable()
+		t
+			.string('proposalHash')
+			.notNullable()
+			.index()
+		t
+			.integer('createdBy')
 			.references('id')
 			.inTable('user')
 			.index()
@@ -17,7 +25,6 @@ module.exports.up = async () => {
 			.references('id')
 			.inTable('comment')
 			.index()
-			.nullable()
 	})
 }
 
