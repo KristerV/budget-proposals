@@ -29,7 +29,7 @@ module.exports = test => {
 		const db = await getDbDriver()
 		await cleaner.clean(db, {
 			mode: 'truncate',
-			ignoreTables: ['migrations', 'migrations_lock']
+			ignoreTables: ['migration', 'migration_lock']
 		})
 	})
 
