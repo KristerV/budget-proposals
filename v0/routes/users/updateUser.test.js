@@ -8,7 +8,7 @@ const { User } = require('../../../database/models')
 const { UnauthorizedError, BadRequestError, NotFoundError } = require('../../errors')
 const { signJwt, encodeId, decodeId } = require('../../utils')
 const scopes = require('../../scopes')
-const { shouldNotAcceptInvalidToken } = require('./testUtils')
+const { shouldNotAcceptInvalidToken } = require('../../testUtils')
 
 const updateEndpoint = '/v0/users/:id'
 
