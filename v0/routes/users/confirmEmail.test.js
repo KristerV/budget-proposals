@@ -7,7 +7,7 @@ const { User } = require('../../../database/models')
 const { NotFoundError, UnauthorizedError } = require('../../errors')
 const { signJwt, decodeId, encodeId } = require('../../utils')
 const scopes = require('../../scopes')
-const { shouldNotAcceptInvalidToken } = require('./testUtils')
+const { shouldNotAcceptInvalidToken } = require('../../testUtils')
 
 const confirmEmailEndpoint = '/v0/users/:id/confirmEmail'
 

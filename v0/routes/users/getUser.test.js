@@ -7,7 +7,7 @@ const { User } = require('../../../database/models')
 const { UnauthorizedError, NotFoundError } = require('../../errors')
 const { signJwt, decodeId, encodeId } = require('../../utils')
 const scopes = require('../../scopes')
-const { shouldNotAcceptInvalidToken } = require('./testUtils')
+const { shouldNotAcceptInvalidToken } = require('../../testUtils')
 
 const selfEndpoint = '/v0/users/:id'
 
@@ -20,7 +20,7 @@ async function makeRequest(token, id) {
 }
 
 test(
-	`GET ${selfEndpoint} should not accept valid auth token`,
+	`GET ${selfEndpoint} should not accept invalid auth token`,
 	shouldNotAcceptInvalidToken(makeRequest)
 )
 

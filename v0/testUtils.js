@@ -1,6 +1,6 @@
-const { User } = require('../../../database/models')
-const { UnauthorizedError } = require('../../errors')
-const { signJwt } = require('../../utils')
+const { User } = require('../database/models')
+const { UnauthorizedError } = require('./errors')
+const { signJwt } = require('./utils')
 
 module.exports.shouldNotAcceptInvalidToken = makeRequest => async t => {
 	const user = await User.create({

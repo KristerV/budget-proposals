@@ -7,7 +7,7 @@ const { User } = require('../../../database/models')
 const { NotFoundError, UnauthorizedError, BadRequestError } = require('../../errors')
 const { signJwt, encodeId, decodeId } = require('../../utils')
 const scopes = require('../../scopes')
-const { shouldNotAcceptInvalidToken } = require('./testUtils')
+const { shouldNotAcceptInvalidToken } = require('../../testUtils')
 
 const resetPasswordEndpoint = '/v0/users/:id/resetPassword'
 
