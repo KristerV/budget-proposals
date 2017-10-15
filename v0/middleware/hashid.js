@@ -1,39 +1,58 @@
 const { encodeId, decodeId } = require('../utils')
 
-const isObjectWithId = value => value && typeof value === 'object' && 'id' in value
+const isObject = value => value && typeof value === 'object'
+const hasKey = (obj, key) => obj[key] !== null && obj[key] !== undefined
 
-// TODO: allow additional properties to be passed in for encoding / decoding
-//   ie. app.get('/', hashid(['userId', ...]), handler)
-// 		- checks req.body, req.query and req.params for additional properties to decode
-// 		- checks res.body for additional properties to encode
+// interates over array or object of arrays and applies the transformer
+// function to provided keys
+const transformObjectKeys = transformer => (data, keys) => {
+	if (Array.isArray(data) && isObject(data[0])) {
+		// data is a collection of objects
+		data.forEach(obj => {
+			keys.forEach(key => {
+				if (hasKey(obj, key)) obj[key] = transformer(obj[key])
+			})
+		})
+	} else if (isObject(data)) {
+		keys.forEach(key => {
+			if (hasKey(data, key)) data[key] = transformer(data[key])
+		})
+	}
+}
 
-module.exports = function createHashIdMiddleware() {
+const encodeKeys = transformObjectKeys(encodeId)
+const decodeKeys = transformObjectKeys(decodeId)
+
+module.exports = function createHashIdMiddleware(idKeys = []) {
 	return function hashIdMiddleware(req, res, next) {
-		// decode id in request parameters
-		if (req.params && req.params.id) {
-			req.params.id = decodeId(req.params.id)
-		}
-
-		// decode id in request token
+		// decode sub in request token
 		if (req.token && req.token.sub) {
 			req.token.sub = decodeId(req.token.sub)
 		}
 
+		// decode keys in request parameters
+		if (req.params) {
+			decodeKeys(req.params, idKeys)
+		}
+
+		// decode keys in query parameters
+		if (req.query) {
+			decodeKeys(req.query, idKeys)
+		}
+
+		// decode keys in request body
+		if (req.body) {
+			decodeKeys(req.body, idKeys)
+		}
+
 		// override res.json to return hash ids
 		const oldJson = res.json.bind(res)
-
 		res.json = body => {
-			if (Array.isArray(body) && isObjectWithId(body[0])) {
-				// body is a collection of objects with ids, send a new array with encoded ids
-				body.forEach(value => {
-					value.id = encodeId(value.id)
-				})
-			} else if (isObjectWithId(body)) {
-				body.id = encodeId(body.id)
-			}
-
+			// encode keys in response body
+			encodeKeys(body, idKeys)
 			oldJson(body)
 		}
+
 		next()
 	}
 }
