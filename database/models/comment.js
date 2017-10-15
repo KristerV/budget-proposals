@@ -1,6 +1,6 @@
 const omit = require('lodash.omit')
 const getDbDriver = require('../getDbDriver')
-const { createTimestamps, updateTimestamps, withTransaction } = require('./utils')
+const { createTimestamps, updateTimestamps, deleteTimestamps, withTransaction } = require('./utils')
 
 /**
  * Comment Model
@@ -9,7 +9,7 @@ const { createTimestamps, updateTimestamps, withTransaction } = require('./utils
 
 const table = 'comment'
 const voteTable = 'comment_vote'
-const privateFields = []
+const privateFields = ['deletedAt']
 
 /**
  * @typedef Comment
@@ -74,6 +74,24 @@ module.exports.update = async (id, attrs, trx) => {
 		db(table)
 			.where('id', id)
 			.update(updateTimestamps(attrs), '*')
+	)
+
+	return comment
+}
+
+/**
+ * @function - soft deletes a comment
+ * @param {number} id - the id of the comment to delete
+ * @param {*=} trx - the optional transaction context
+ * @return {Promise<?Comment>} - the updated comment
+ */
+module.exports.delete = async (id, trx) => {
+	const db = await getDbDriver()
+	const [comment] = await withTransaction(
+		trx,
+		db(table)
+			.where('id', id)
+			.update(deleteTimestamps(), '*')
 	)
 
 	return comment
