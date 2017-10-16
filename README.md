@@ -44,6 +44,11 @@ Tests are run against a separate test database. Make sure you run `docker-compos
 
 ```
 v0                                      // Alpha version, subject to constant change
+GET   v0/comments?proposalHash=         // Get all comments for a proposal
+POST  v0/comments                       // Create a new comment
+PUT   v0/comments/:id                   // Update a comment by id
+DEL   v0/comments/:id                   // Delete a comment by id
+POST  v0/comments/:id/vote              // Vote on a comment  
 GET   v0/core/proposals                 // All proposals
 GET   v0/core/proposals/:hash           // Single proposal
 GET   v0/core/raw-cli/*                 // Raw data from the cli
