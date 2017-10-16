@@ -42,6 +42,9 @@ test(`DELETE ${deleteEndpoint} should delete comment`, async t => {
 
 	t.is(status, 200, body)
 	t.is(body, true)
+
+	const deletedComment = await Comment.findOne({ id: comment.id })
+	t.is(deletedComment, undefined)
 })
 
 test(`DELETE ${deleteEndpoint} should not update with invalid comment id`, async t => {

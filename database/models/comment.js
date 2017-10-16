@@ -127,6 +127,7 @@ module.exports.findOne = async attrs => {
 		.first('*', likes(db), dislikes(db), score(db))
 		.from(table)
 		.where(attrs)
+		.whereNull('deletedAt')
 
 	return comment
 }
@@ -142,6 +143,7 @@ module.exports.findAll = async attrs => {
 		.select('*', likes(db), dislikes(db), score(db))
 		.from(table)
 		.where(attrs)
+		.whereNull('deletedAt')
 
 	return comments
 }
