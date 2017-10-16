@@ -17,6 +17,15 @@ const updateInputSchema = yup.object().shape({
 	replyToId: yup.number()
 })
 
+const voteInputSchema = yup.object().shape({
+	direction: yup
+		.number()
+		.integer()
+		.min(-1)
+		.max(1)
+		.required()
+})
+
 const validateCreateAttributes = async attrs => {
 	const errors = await validateSchema(createInputSchema, attrs)
 	if (errors) throw new BadRequestError(errors[0])
@@ -38,7 +47,13 @@ const validateUpdateAttributes = async (attrs, commentToUpdate) => {
 		throw new BadRequestError('cannot change parent comment')
 }
 
+const validateVoteAttributes = async attrs => {
+	const errors = await validateSchema(voteInputSchema, attrs)
+	if (errors) throw new BadRequestError(errors[0])
+}
+
 module.exports = {
 	validateCreateAttributes,
-	validateUpdateAttributes
+	validateUpdateAttributes,
+	validateVoteAttributes
 }

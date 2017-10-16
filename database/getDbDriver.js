@@ -1,5 +1,10 @@
+const pg = require('pg')
 const knex = require('knex')
 const config = require('./config')
+
+// aggregate functions like sum and count return bigints, which pg parses as strings
+// this tells pg to parse bigints as integers
+pg.types.setTypeParser(20, 'text', parseInt)
 
 let driver
 

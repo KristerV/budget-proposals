@@ -5,7 +5,10 @@ module.exports.up = async () => {
 	return db.schema.createTable('comment_vote', t => {
 		t.timestamp('createdAt').notNullable()
 		t.timestamp('updatedAt').notNullable()
-		t.integer('direction').notNullable()
+		t
+			.integer('direction')
+			.notNullable()
+			.index()
 		t
 			.integer('createdBy')
 			.references('id')

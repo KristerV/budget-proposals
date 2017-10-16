@@ -11,6 +11,27 @@ const table = 'comment'
 const voteTable = 'comment_vote'
 const privateFields = ['deletedAt']
 
+const likes = db =>
+	db
+		.count('*')
+		.from(voteTable)
+		.whereRaw(`${voteTable}."commentId" = ${table}.id and direction = 1`)
+		.as('likes')
+
+const dislikes = db =>
+	db
+		.count('*')
+		.from(voteTable)
+		.whereRaw(`${voteTable}."commentId" = ${table}.id and direction = -1`)
+		.as('dislikes')
+
+const score = db =>
+	db
+		.sum('direction')
+		.from(voteTable)
+		.whereRaw(`${voteTable}."commentId" = ${table}.id`)
+		.as('score')
+
 /**
  * @typedef Comment
  * @type {object}
@@ -34,7 +55,6 @@ const privateFields = ['deletedAt']
  * @typedef CommentVote
  * @type {object}
  * @property {number} direction - the user's vote (1 = like, -1 = dislike, 0 = unvote)
- * @property {number} commentId - the comment of the vote
  * @property {number} createdBy - the user of the vote
  * @property {string} createdAt - the date the vote was created
  * @property {string} updatedAt - the date the vote was last updated
@@ -44,7 +64,6 @@ const privateFields = ['deletedAt']
  * @typedef CommentVoteAttributes
  * @type {object}
  * @property {number} direction - the user's vote (1 = like, -1 = dislike, 0 = unvote)
- * @property {number} commentId - the comment of the vote
  * @property {number} createdBy - the user of the vote
  */
 
@@ -105,7 +124,7 @@ module.exports.delete = async (id, trx) => {
 module.exports.findOne = async attrs => {
 	const db = await getDbDriver()
 	const comment = await db
-		.first()
+		.first('*', likes(db), dislikes(db), score(db))
 		.from(table)
 		.where(attrs)
 
@@ -120,7 +139,7 @@ module.exports.findOne = async attrs => {
 module.exports.findAll = async attrs => {
 	const db = await getDbDriver()
 	const comments = await db
-		.select()
+		.select('*', likes(db), dislikes(db), score(db))
 		.from(table)
 		.where(attrs)
 
@@ -132,21 +151,27 @@ module.exports.findAll = async attrs => {
  * @param {CommentVoteAttributes} voteAttrs - the attributes of the vote
  * @return {Promise.<CommentVote>} - the comment vote
  */
-module.exports.vote = async voteAttrs => {
-	const { commentId, createdBy, direction } = voteAttrs
+module.exports.vote = async (id, voteAttrs) => {
+	const { createdBy, direction } = voteAttrs
 	const db = await getDbDriver()
 	let vote = await db
 		.first()
 		.from(voteTable)
-		.where({ commentId, createdBy })
+		.where({ commentId: id, createdBy })
 
 	// update existing vote, otherwise create
 	if (vote) {
-		vote = await db(voteTable)
-			.where('id', vote.id)
+		const [updatedVote] = await db(voteTable)
+			.where({ commentId: id, createdBy })
 			.update(updateTimestamps({ direction }), '*')
+
+		vote = updatedVote
 	} else {
-		vote = await db(voteTable).insert(createTimestamps(voteAttrs), '*')
+		const [createdVote] = await db(voteTable).insert(
+			createTimestamps({ commentId: id, createdBy, direction }),
+			'*'
+		)
+		vote = createdVote
 	}
 
 	return vote
