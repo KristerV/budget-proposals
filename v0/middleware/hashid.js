@@ -3,11 +3,11 @@ const { encodeId, decodeId } = require('../utils')
 const isObject = value => value && typeof value === 'object'
 const hasKey = (obj, key) => obj[key] !== null && obj[key] !== undefined
 
-// interates over array or object of arrays and applies the transformer
-// function to provided keys
+// interates over the keys of an objet or collection
+// and applies the transformer function to specified keys
 const transformObjectKeys = transformer => (data, keys) => {
 	if (Array.isArray(data) && isObject(data[0])) {
-		// data is a collection of objects
+		// data is a collection
 		data.forEach(obj => {
 			keys.forEach(key => {
 				if (hasKey(obj, key)) obj[key] = transformer(obj[key])

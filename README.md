@@ -65,7 +65,7 @@ POST  v0/users/:id/resetPassword        // Updates the users password with short
 Middleware adds common behaviour to routes handlers.
 
 - [auth](/v0/middleware/auth.js) enables JWT authentication with an optional set of scopes
-- [hashid](/v0/middleware/hashid.js) automatically decodes ids in request parameters / tokens and encodes ids in the payload
+- [hashid](/v0/middleware/hashid.js) automatically hashes ids in the response and decodes them in the request
 - [errors](/v0/middleware/errors.js) handles errors that occur in the handlers
 - [json](/v0/middleware/index.js) parses the request body as json
 
