@@ -1,4 +1,6 @@
-module.exports = function(name, code) {
+const httpErrorIdentifier = Symbol('httpError')
+
+module.exports.createHttpError = (name, code) => {
 	class HttpError extends Error {
 		constructor(message) {
 			super(message)
@@ -7,6 +9,7 @@ module.exports = function(name, code) {
 			this.name = name
 			this.message = message
 			this.code = code
+			this[httpErrorIdentifier] = true
 
 			// add stack trace to error object
 			Error.captureStackTrace(this, this.constructor)
@@ -18,3 +21,5 @@ module.exports = function(name, code) {
 
 	return HttpError
 }
+
+module.exports.isHttpError = error => !!error[httpErrorIdentifier]

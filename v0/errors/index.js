@@ -1,6 +1,7 @@
-const createHttpError = require('./createHttpError')
+const { createHttpError, isHttpError } = require('./createHttpError')
 
 module.exports = {
+	isHttpError,
 	BadRequestError: createHttpError('BadRequestError', 400),
 	UnauthorizedError: createHttpError('UnauthorizedError', 401),
 	ForbiddenError: createHttpError('ForbiddenError', 403),

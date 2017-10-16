@@ -1,9 +1,9 @@
-const { InternalServerError } = require('../errors')
+const { isHttpError, InternalServerError } = require('../errors')
 
 module.exports = function createErrorsMiddleware() {
 	return function errorsMiddleware(err, req, res, next) {
 		// unexpected error
-		if (!err.code) {
+		if (!isHttpError(err)) {
 			console.error(err)
 			err = new InternalServerError(err.message)
 		}
