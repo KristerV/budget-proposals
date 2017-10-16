@@ -140,3 +140,30 @@ test(`PUT ${updateEndpoint} should not update a non-existent comment`, async t =
 	t.is(body.code, NotFoundError.CODE)
 	t.truthy(body.message)
 })
+
+test(`PUT ${updateEndpoint} should not update a deleted comment`, async t => {
+	const user = await User.create({
+		username: 'test',
+		password: '123456123456'
+	})
+
+	const otherUser = await User.create({
+		username: 'other',
+		password: '123456123456'
+	})
+
+	const comment = await Comment.create({
+		text: 'text',
+		proposalHash: 'abc',
+		createdBy: otherUser.id
+	})
+
+	await Comment.delete(comment.id)
+
+	const token = await signJwt({ scopes: scopes.user }, { subject: encodeId(user.id) })
+	const { status, body } = await makeRequest(token, encodeId(comment.id), { text: 'updated' })
+
+	t.is(status, NotFoundError.CODE, body.message)
+	t.is(body.code, NotFoundError.CODE)
+	t.truthy(body.message)
+})
