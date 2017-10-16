@@ -26,11 +26,11 @@ const dislikes = db =>
 		.as('dislikes')
 
 const score = db =>
-	db
-		.sum('direction')
-		.from(voteTable)
-		.whereRaw(`${voteTable}."commentId" = ${table}.id`)
-		.as('score')
+	db.raw(`(
+		select coalesce(sum(comment_vote.direction), 0)
+		from ${voteTable}
+		where ${voteTable}."commentId" = ${table}.id
+	) as score`)
 
 /**
  * @typedef Comment
@@ -127,7 +127,7 @@ module.exports.findOne = async attrs => {
 		.first('*', likes(db), dislikes(db), score(db))
 		.from(table)
 		.where(attrs)
-		.whereNull('deletedAt')
+		.whereNull('deletedAt') // return nil if comment is deleted
 
 	return comment
 }
@@ -139,11 +139,11 @@ module.exports.findOne = async attrs => {
  */
 module.exports.findAll = async attrs => {
 	const db = await getDbDriver()
+	// purposefully returning deleted comments to preserve thread
 	const comments = await db
 		.select('*', likes(db), dislikes(db), score(db))
 		.from(table)
 		.where(attrs)
-		.whereNull('deletedAt')
 
 	return comments
 }
@@ -185,5 +185,13 @@ module.exports.vote = async (id, voteAttrs) => {
  * @return {Comment} - the comment without private fields
  */
 module.exports.toJSON = comment => {
-	return omit(comment, privateFields)
+	const json = omit(comment, privateFields)
+
+	if (comment.deletedAt) {
+		delete json.text
+		delete json.createdBy
+		json.deleted = true
+	}
+
+	return json
 }

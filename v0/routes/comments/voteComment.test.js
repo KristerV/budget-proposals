@@ -108,6 +108,33 @@ test(`POST ${voteEndpoint} should reset vote`, async t => {
 	t.is(body.score, 0)
 })
 
+test(`POST ${voteEndpoint} return zeros for comments with no votes`, async t => {
+	const user = await User.create({
+		username: 'test',
+		password: '123456123456'
+	})
+
+	const otherUser = await User.create({
+		username: 'other',
+		password: '123456123456'
+	})
+
+	const comment = await Comment.create({
+		text: 'text',
+		proposalHash: 'abc',
+		createdBy: otherUser.id
+	})
+
+	const token = await signJwt({ scopes: scopes.user }, { subject: encodeId(user.id) })
+	const { status, body } = await makeRequest(token, encodeId(comment.id), { direction: 0 })
+
+	t.is(status, 200, body.message)
+	t.is(decodeId(body.id), comment.id)
+	t.is(body.likes, 0)
+	t.is(body.dislikes, 0)
+	t.is(body.score, 0)
+})
+
 test(`POST ${voteEndpoint} should not vote with invalid comment id`, async t => {
 	const user = await User.create({
 		username: 'test',
