@@ -11,6 +11,8 @@ module.exports = async (req, res) => {
 
 	const comment = await Comment.findOne({ id })
 	if (!comment) throw new NotFoundError('comment not found')
+	if (comment.createdBy === createdBy)
+		throw new BadRequestError('cannot vote on your own comment')
 
 	await validateVoteAttributes({ direction }, comment)
 	await Comment.vote(comment.id, { direction, createdBy })

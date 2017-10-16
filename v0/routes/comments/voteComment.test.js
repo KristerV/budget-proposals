@@ -31,10 +31,15 @@ test(`POST ${voteEndpoint} should like comment`, async t => {
 		password: '123456123456'
 	})
 
+	const otherUser = await User.create({
+		username: 'other',
+		password: '123456123456'
+	})
+
 	const comment = await Comment.create({
 		text: 'text',
 		proposalHash: 'abc',
-		createdBy: user.id
+		createdBy: otherUser.id
 	})
 
 	const token = await signJwt({ scopes: scopes.user }, { subject: encodeId(user.id) })
@@ -53,10 +58,15 @@ test(`POST ${voteEndpoint} should dislike comment`, async t => {
 		password: '123456123456'
 	})
 
+	const otherUser = await User.create({
+		username: 'other',
+		password: '123456123456'
+	})
+
 	const comment = await Comment.create({
 		text: 'text',
 		proposalHash: 'abc',
-		createdBy: user.id
+		createdBy: otherUser.id
 	})
 
 	const token = await signJwt({ scopes: scopes.user }, { subject: encodeId(user.id) })
@@ -75,10 +85,15 @@ test(`POST ${voteEndpoint} should reset vote`, async t => {
 		password: '123456123456'
 	})
 
+	const otherUser = await User.create({
+		username: 'other',
+		password: '123456123456'
+	})
+
 	const comment = await Comment.create({
 		text: 'text',
 		proposalHash: 'abc',
-		createdBy: user.id
+		createdBy: otherUser.id
 	})
 
 	await Comment.vote(comment.id, { direction: 1, createdBy: user.id })
@@ -117,10 +132,15 @@ test(`POST ${voteEndpoint} should not vote comment with invalid attributes`, asy
 		password: '123456123456'
 	})
 
+	const otherUser = await User.create({
+		username: 'other',
+		password: '123456123456'
+	})
+
 	const comment = await Comment.create({
 		text: 'text',
 		proposalHash: 'abc',
-		createdBy: user.id
+		createdBy: otherUser.id
 	})
 
 	const invalidAttrs = [null, {}, { direction: null }, { direction: -2 }, { direction: 2 }]
@@ -146,5 +166,25 @@ test(`POST ${voteEndpoint} should not vote on non-existent comment`, async t => 
 
 	t.is(status, NotFoundError.CODE, body.message)
 	t.is(body.code, NotFoundError.CODE)
+	t.truthy(body.message)
+})
+
+test(`POST ${voteEndpoint} should not allowed users to vote on their own comment`, async t => {
+	const user = await User.create({
+		username: 'test',
+		password: '123456123456'
+	})
+
+	const comment = await Comment.create({
+		text: 'text',
+		proposalHash: 'abc',
+		createdBy: user.id
+	})
+
+	const token = await signJwt({ scopes: scopes.user }, { subject: encodeId(user.id) })
+	const { status, body } = await makeRequest(token, encodeId(comment.id), { direction: 1 })
+
+	t.is(status, BadRequestError.CODE, body.message)
+	t.is(body.code, BadRequestError.CODE)
 	t.truthy(body.message)
 })
