@@ -11,26 +11,9 @@ const table = 'comment'
 const voteTable = 'comment_vote'
 const privateFields = ['deletedAt']
 
-const likes = db =>
-	db
-		.count('*')
-		.from(voteTable)
-		.whereRaw(`${voteTable}."commentId" = ${table}.id and direction = 1`)
-		.as('likes')
-
-const dislikes = db =>
-	db
-		.count('*')
-		.from(voteTable)
-		.whereRaw(`${voteTable}."commentId" = ${table}.id and direction = -1`)
-		.as('dislikes')
-
-const score = db =>
-	db.raw(`(
-		select coalesce(sum(comment_vote.direction), 0)
-		from ${voteTable}
-		where ${voteTable}."commentId" = ${table}.id
-	) as score`)
+const likes = db => db.raw('count(case direction when 1 then 1 else null end) as likes')
+const dislikes = db => db.raw('count(case direction when -1 then 1 else null end) as dislikes')
+const score = db => db.raw('coalesce(sum(direction), 0) as score')
 
 /**
  * @typedef Comment
@@ -124,10 +107,12 @@ module.exports.delete = async (id, trx) => {
 module.exports.findOne = async attrs => {
 	const db = await getDbDriver()
 	const comment = await db
-		.first('*', likes(db), dislikes(db), score(db))
+		.first(`${table}.*`, likes(db), dislikes(db), score(db))
 		.from(table)
+		.leftJoin(voteTable, `${table}.id`, `${voteTable}.commentId`)
 		.where(attrs)
 		.whereNull('deletedAt') // return nil if comment is deleted
+		.groupBy(`${table}.id`)
 
 	return comment
 }
@@ -141,9 +126,11 @@ module.exports.findAll = async attrs => {
 	const db = await getDbDriver()
 	// purposefully returning deleted comments to preserve thread
 	const comments = await db
-		.select('*', likes(db), dislikes(db), score(db))
+		.select(`${table}.*`, likes(db), dislikes(db), score(db))
 		.from(table)
+		.leftJoin(voteTable, `${table}.id`, `${voteTable}.commentId`)
 		.where(attrs)
+		.groupBy(`${table}.id`)
 
 	return comments
 }
