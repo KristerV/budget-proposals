@@ -8,13 +8,13 @@ const textSchema = yup.string().min(1)
 const createInputSchema = yup.object().shape({
 	text: textSchema.required(),
 	proposalHash: yup.string().required(),
-	replyToId: yup.number()
+	parentId: yup.number()
 })
 
 const updateInputSchema = yup.object().shape({
 	text: textSchema,
 	proposalHash: yup.string(),
-	replyToId: yup.number()
+	parentId: yup.number()
 })
 
 const voteInputSchema = yup.object().shape({
@@ -30,8 +30,8 @@ const validateCreateAttributes = async attrs => {
 	const errors = await validateSchema(createInputSchema, attrs)
 	if (errors) throw new BadRequestError(errors[0])
 
-	if (attrs.replyToId) {
-		const comment = await Comment.findOne({ id: attrs.replyToId })
+	if (attrs.parentId) {
+		const comment = await Comment.findOne({ id: attrs.parentId })
 		if (!comment) throw new BadRequestError('parent comment not found')
 	}
 }
@@ -43,7 +43,7 @@ const validateUpdateAttributes = async (attrs, commentToUpdate) => {
 	if (attrs.proposalHash && attrs.proposalHash !== commentToUpdate.proposalHash)
 		throw new BadRequestError('cannot change proposal hash')
 
-	if (attrs.replyToId && attrs.replyToId !== commentToUpdate.replyToId)
+	if (attrs.parentId && attrs.parentId !== commentToUpdate.parentId)
 		throw new BadRequestError('cannot change parent comment')
 }
 

@@ -6,7 +6,7 @@ const updateComment = require('./updateComment')
 const voteComment = require('./voteComment')
 const deleteComment = require('./deleteComment')
 
-const commentHashId = hashid(['id', 'createdBy', 'replyToId'])
+const commentHashId = hashid(['id', 'createdBy', 'parentId'])
 
 module.exports = app => {
 	app.get('/', commentHashId, getComments)

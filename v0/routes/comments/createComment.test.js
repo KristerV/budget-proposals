@@ -40,7 +40,7 @@ test(`POST ${createEndpoint} should create comment`, async t => {
 	const token = await signJwt({ scopes: scopes.user }, { subject: encodeId(user.id) })
 	const validAttrs = [
 		{ text: 'text', proposalHash: 'abc' },
-		{ text: 'text', proposalHash: 'abc', replyToId: encodeId(comment.id) }
+		{ text: 'text', proposalHash: 'abc', parentId: encodeId(comment.id) }
 	]
 
 	for (const attrs of validAttrs) {
@@ -53,8 +53,8 @@ test(`POST ${createEndpoint} should create comment`, async t => {
 		t.is(body.createdAt, body.updatedAt)
 		t.is(decodeId(body.createdBy), user.id)
 		t.is(body.text, attrs.text)
-		if (body.replyToId) {
-			t.is(decodeId(body.replyToId), comment.id)
+		if (body.parentId) {
+			t.is(decodeId(body.parentId), comment.id)
 		}
 	}
 })
@@ -70,7 +70,7 @@ test(`POST ${createEndpoint} should not create comment with invalid attributes`,
 		{},
 		{ text: null, proposalHash: 'abc' },
 		{ text: '', proposalHash: 'abc' },
-		{ text: 'text', proposalHash: 'abc', replyToId: encodeId(9999) } // non-existent replyToId
+		{ text: 'text', proposalHash: 'abc', parentId: encodeId(9999) } // non-existent parentId
 	]
 
 	const token = await signJwt({ scopes: scopes.user }, { subject: encodeId(user.id) })

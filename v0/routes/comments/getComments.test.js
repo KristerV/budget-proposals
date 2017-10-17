@@ -38,7 +38,7 @@ test(`GET ${getAllEndpoint} should return comments`, async t => {
 	const otherUserComment = await Comment.create({
 		text: 'other',
 		proposalHash,
-		replyToId: comment.id,
+		parentId: comment.id,
 		createdBy: otherUser.id
 	})
 
@@ -70,7 +70,7 @@ test(`GET ${getAllEndpoint} should return comments`, async t => {
 	t.is(retComment.text, comment.text)
 	t.is(retComment.proposalHash, comment.proposalHash)
 	t.is(decodeId(retComment.createdBy), user.id)
-	t.is(retComment.replyToId, null)
+	t.is(retComment.parentId, null)
 	t.is(retComment.likes, 1)
 	t.is(retComment.dislikes, 0)
 	t.is(retComment.score, 1)
@@ -82,7 +82,7 @@ test(`GET ${getAllEndpoint} should return comments`, async t => {
 	t.is(retOtherUserComment.text, otherUserComment.text)
 	t.is(retOtherUserComment.proposalHash, otherUserComment.proposalHash)
 	t.is(decodeId(retOtherUserComment.createdBy), otherUser.id)
-	t.is(decodeId(retOtherUserComment.replyToId), comment.id)
+	t.is(decodeId(retOtherUserComment.parentId), comment.id)
 	t.is(retOtherUserComment.likes, 0)
 	t.is(retOtherUserComment.dislikes, 1)
 	t.is(retOtherUserComment.score, -1)
@@ -95,7 +95,7 @@ test(`GET ${getAllEndpoint} should return comments`, async t => {
 	t.is(retDeletedComment.text, undefined)
 	t.is(retDeletedComment.proposalHash, deletedComment.proposalHash)
 	t.is(decodeId(retDeletedComment.createdBy), undefined)
-	t.is(retDeletedComment.replyToId, null)
+	t.is(retDeletedComment.parentId, null)
 	t.is(retDeletedComment.likes, 0)
 	t.is(retDeletedComment.dislikes, 0)
 	t.is(retDeletedComment.score, 0)

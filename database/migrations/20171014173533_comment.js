@@ -21,7 +21,7 @@ module.exports.up = async () => {
 			.inTable('user')
 			.index()
 		t
-			.integer('replyToId')
+			.integer('parentId')
 			.references('id')
 			.inTable('comment')
 			.index()

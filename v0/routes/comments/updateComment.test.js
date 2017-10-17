@@ -87,8 +87,8 @@ test(`PUT ${updateEndpoint} should not update comment with invalid attributes`, 
 		{ text: null },
 		{ proposalHash: null },
 		{ proposalHash: 'updated' },
-		{ replyToId: null },
-		{ replyToId: encodeId(9999) }
+		{ parentId: null },
+		{ parentId: encodeId(9999) }
 	]
 
 	const token = await signJwt({ scopes: scopes.user }, { subject: encodeId(user.id) })
