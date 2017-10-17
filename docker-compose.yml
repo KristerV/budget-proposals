@@ -1,13 +1,32 @@
 version: "3"
 
 services:
-  api:
-    build: .
+  daemon:
+    build: 
+      context: ./docker/daemon
+      dockerfile: ./docker/daemon/Dockerfile
+    volumes:
+      - coinbin:/coinbin
+    ports:
+      - 8332:8332
+    command: bash -c "cp /usr/local/bin/helium* /coinbin && /usr/local/bin/heliumd"
+    restart: always
+    volumes:
+      - coincore:/root/.heliumcore
+
+  backend:
+    build: 
+      context: ./
+      dockerfile: ./docker/backend/Dockerfile
     ports:
       - "3000:3000"
     volumes:
-      - .:/opt/app
-      - /opt/app/node_modules/
+      - .:/var/www/backend
+      - /var/www/backend/node_modules/
+      - coinbin:/coinbin
+      - coincore:/root/.heliumcore
+    depends_on:
+      - daemon
     # pull container env vars from .env file
     # we need to override DB_HOST because docker-compose enables communication between containers
     # by bridging the network using the service name
@@ -34,3 +53,7 @@ services:
       POSTGRES_DB: heliumlabs-test
       POSTGRES_USER: test
       POSTGRES_PASSWORD: test
+
+volumes:
+  coinbin:
+  coincore:
