@@ -4,10 +4,7 @@ module.exports.up = async () => {
 	const db = await getDbDriver()
 	return db.schema.createTable('comment', t => {
 		t.increments('id')
-		t
-			.timestamp('createdAt')
-			.notNullable()
-			.index()
+		t.timestamp('createdAt').notNullable()
 		t.timestamp('updatedAt').notNullable()
 		t.timestamp('deletedAt').index()
 		t.text('text').notNullable()
@@ -24,7 +21,6 @@ module.exports.up = async () => {
 			.integer('parentId')
 			.references('id')
 			.inTable('comment')
-			.index()
 	})
 }
 
