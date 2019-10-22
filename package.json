@@ -32,7 +32,7 @@
     "express-promise-router": "^2.0.0",
     "hashids": "^1.1.1",
     "jsonwebtoken": "^7.4.3",
-    "knex": "^0.13.0",
+    "knex": "^0.19.5",
     "lodash.omit": "^4.5.0",
     "mailgun-js": "^0.18.0",
     "moment": "^2.18.1",
