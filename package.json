@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/KristerV/budget-proposals#readme",
   "dependencies": {
-    "bcrypt": "^1.0.3",
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.17.2",
     "child-process-promise": "^2.2.1",
     "dotenv": "^4.0.0",
